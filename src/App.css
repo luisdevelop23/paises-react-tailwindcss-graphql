@@ -1,0 +1,29 @@
+.scroll-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.section::-webkit-scrollbar {
+  width: 10px;
+}
+.section::-webkit-scrollbar-track {
+  background-color: rgb(212 212 216);
+}
+.section::-webkit-scrollbar-thumb {
+  background: darkgrey;
+  border-radius: 10px;
+}
+
+.nsi:hover {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+}
+.slr {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+.sci {
+  box-shadow: 0 0 13px 0 rgb(14 165 233);
+}
