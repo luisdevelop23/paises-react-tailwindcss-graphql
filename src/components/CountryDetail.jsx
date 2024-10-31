@@ -17,7 +17,7 @@ const CountryDetail = () => {
 
   useEffect(() => {
     fetchImages();
-  });
+  }, [data]);
   const fetchImages = async () => {
     if (data && data.countries) {
       try {

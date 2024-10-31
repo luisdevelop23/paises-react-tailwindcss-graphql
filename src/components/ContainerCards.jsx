@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { CountryContext } from "../context/CountryContext";
 import Card from "./Card";
 
@@ -9,10 +8,8 @@ const ContainerCards = () => {
     countryImages,
     loading,
     error,
-    ld,
     data,
     continent,
-    fetchImages,
   } = useContext(CountryContext);
   const [filteredCountries, setFilteredCountries] = useState([]);
 
@@ -36,20 +33,15 @@ const ContainerCards = () => {
     }
   }, [data, searchValue, continent]);
 
-  useEffect(() => {
-    fetchImages();
-  }, [data, fetchImages]);
-
-  if (ld || loading) return <p>Cargando...</p>;
+  if ( loading) return <p>Cargando...</p>;
   if (error) return <p>Error al cargar los datos.</p>;
 
   return (
-    <div className="mt-10 relative gap-y-4 px-3 lg:gap-4  xl:px-8 grid pb-8 grid-cols-2 md:grid-cols-2 xl:grid-cols-3 w-full overflow-y-auto scroll-container">
+    <div className="mt-10 relative gap-y-4 px-3 lg:gap-4 xl:px-8 grid pb-8 grid-cols-2 md:grid-cols-2 xl:grid-cols-3 w-full overflow-y-auto scroll-container">
       {filteredCountries.map((country) => (
         <Card
           key={country.code}
           country={country}
-          img={countryImages[country.code]}
         />
       ))}
     </div>

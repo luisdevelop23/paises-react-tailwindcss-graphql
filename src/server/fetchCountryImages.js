@@ -1,50 +1,37 @@
-const accessKey = "QskgPVZv9cXS4oLFcn3RCFzzZBB4IKb56Cl8LHvZpvk";
-const apiUrl = "https://api.unsplash.com/search/photos";
+// ?importamos las variables de entorno
+const apiKey = "46822481-80ff7d3398873baa0581ebf99"
+const apiUrl = "https://pixabay.com/api/"
 
+// ?funcion para obtener las imagenes
 export const fetchCountryImages = async (countries) => {
-  const allImages = {};
-  const imageCache = {};
-  const MAX_BATCH_SIZE = 10;
+  // ?creamos un array de promesas
+  const imagePromises = countries.map(async (country) => {
+    // ?obtener la url de la imagen
+    const url = `${apiUrl}?key=${apiKey}&q=${encodeURIComponent(
+      country.name
+    )}&image_type=photo&per_page=3`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    // ?al pedir page=3, se obtienen 3 imagenes,
+    // ?al cumplir 2 reglas, que tenga hits, y que sean mayor a 3,
+    //? filtramos los hits que no sean nulos
+    const imageUrl =
+      result.hits && result.hits.length > 0
+        ? result.hits.find((hit) => hit.webformatURL)?.webformatURL
+        : result.hits[0]?.webformatURL;
+    // ?retornamos el objeto con el code y la imagen
+    return { code: country.code, imageUrl };
+  });
 
-  for (let i = 0; i < countries.length; i += MAX_BATCH_SIZE) {
-    const batch = countries.slice(i, i + MAX_BATCH_SIZE);
-
-    const imagePromises = batch.map(async (country) => {
-      if (imageCache[country.code]) {
-        return { code: country.code, imageUrl: imageCache[country.code] };
-      }
-
-      const url = `${apiUrl}?client_id=${accessKey}&query=${encodeURIComponent(
-        country.name,
-      )}&per_page=1`;
-
-      try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        const imageUrl = result.results?.[0]?.urls?.small || null;
-
-        if (imageUrl) {
-          imageCache[country.code] = imageUrl;
-        }
-
-        return { code: country.code, imageUrl };
-      } catch (error) {
-        return { code: country.code, imageUrl: null };
-      }
-    });
-
-    const images = await Promise.all(imagePromises);
-    images.forEach(({ code, imageUrl }) => {
-      allImages[code] = imageUrl;
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-
-  return allImages;
+  // ?Esperar a que todas las promesas se resuelvan y devolver un objeto de imágenes
+  const images = await Promise.all(imagePromises);
+  // console.log(images);
+  // ?el arreglo de imagenes se convierte en un objeto,
+  return images.reduce((acc, { code, imageUrl }) => {
+    acc[code] = imageUrl;
+    return acc;
+  }, {});
 };
